@@ -166,3 +166,5 @@ D:\app ielts vocab\VocabularyApp\obj\Debug\net9.0\refint\VocabularyApp.dll
 D:\app ielts vocab\VocabularyApp\obj\Debug\net9.0\VocabularyApp.pdb
 D:\app ielts vocab\VocabularyApp\obj\Debug\net9.0\VocabularyApp.genruntimeconfig.cache
 D:\app ielts vocab\VocabularyApp\obj\Debug\net9.0\ref\VocabularyApp.dll
+D:\app ielts vocab\VocabularyApp\obj\Debug\net9.0\VocabularyApp.sourcelink.json
+D:\app ielts vocab\VocabularyApp\bin\Debug\net9.0\Newtonsoft.Json.dll

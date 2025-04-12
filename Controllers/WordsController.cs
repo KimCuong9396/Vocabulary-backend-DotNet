@@ -10,7 +10,7 @@ namespace VocabularyApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class WordsController : ControllerBase
 {
     private readonly AppDbContext _context;

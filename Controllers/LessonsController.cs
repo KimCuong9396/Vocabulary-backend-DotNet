@@ -50,7 +50,7 @@ public class LessonsController : ControllerBase
 
     // POST: api/Lessons
     [HttpPost]
-    [Authorize(Roles = "Premium")]
+    //[Authorize(Roles = "Premium")]
     public async Task<ActionResult<Lesson>> CreateLesson(Lesson lesson)
     {
         _context.Lessons.Add(lesson);

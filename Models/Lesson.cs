@@ -8,7 +8,7 @@ public class Lesson
     public string? Description { get; set; }
     public int OrderInCourse { get; set; }
 
-    public Course Course { get; set; } = null!;
+    public Course Course { get; set; }
     public List<LessonWord> LessonWords { get; set; } = new();
     public List<Quiz> Quizzes { get; set; } = new();
 }
