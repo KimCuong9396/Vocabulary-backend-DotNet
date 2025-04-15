@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VocabularyApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8c560597237ce3a3516221991afebb6d6750e9ab")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af95d8f05ee3b141ab279ce9449412135f109656")]
 [assembly: System.Reflection.AssemblyProductAttribute("VocabularyApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VocabularyApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

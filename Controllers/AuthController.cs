@@ -59,6 +59,47 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("register-admin")]
+    public async Task<ActionResult> RegisterAdmin([FromBody] RegisterDto registerDto)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid model state for admin register request: {Errors}", string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return BadRequest(ModelState);
+            }
+
+            await _authService.RegisterAdminAsync(registerDto);
+            _logger.LogInformation("Admin registered successfully with username: {Username}", registerDto.Username);
+
+            var user = await _authService.GetUserByUsernameAsync(registerDto.Username);
+            if (user == null)
+            {
+                _logger.LogWarning("Admin not found after registration: {Username}", registerDto.Username);
+                return StatusCode(500, new { Message = "Admin registration succeeded but user not found." });
+            }
+
+            return Ok(new
+            {
+                user.UserId,
+                user.Username,
+                user.Email,
+                Role = user.IsPremium ? "Premium" : "Free"
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning("Admin registration failed for username {Username}: {Message}", registerDto.Username, ex.Message);
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error during admin registration for username: {Username}", registerDto.Username);
+            return StatusCode(500, new { Message = "An unexpected error occurred during admin registration." });
+        }
+    }
+
     [HttpPost("login")]
     public async Task<ActionResult<TokenDto>> Login([FromBody] LoginDto loginDto)
     {

@@ -91,6 +91,49 @@ public class AuthService
         }
     }
 
+    public async Task RegisterAdminAsync(RegisterDto registerDto)
+    {
+        _logger.LogInformation("Attempting to register admin with username: {Username}", registerDto.Username);
+
+        var existingUserByUsername = await _context.Users
+            .AnyAsync(u => u.Username == registerDto.Username);
+        if (existingUserByUsername)
+        {
+            _logger.LogWarning("Admin registration failed: Username {Username} already exists.", registerDto.Username);
+            throw new InvalidOperationException("Username is already taken.");
+        }
+
+        var existingUserByEmail = await _context.Users
+            .AnyAsync(u => u.Email == registerDto.Email);
+        if (existingUserByEmail)
+        {
+            _logger.LogWarning("Admin registration failed: Email {Email} already exists.", registerDto.Email);
+            throw new InvalidOperationException("Email is already registered.");
+        }
+
+        var user = new User
+        {
+            Username = registerDto.Username,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
+            Email = registerDto.Email,
+            FullName = registerDto.FullName,
+            PreferredLanguage = registerDto.PreferredLanguage ?? "en",
+            IsPremium = true // Admin có role Premium
+        };
+
+        try
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Admin registered successfully: {UserId}, Username: {Username}", user.UserId, user.Username);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error registering admin with username: {Username}", registerDto.Username);
+            throw new InvalidOperationException("An error occurred while registering the admin.");
+        }
+    }
+
     public async Task<User?> GetUserByUsernameAsync(string username)
     {
         _logger.LogDebug("Fetching user with username: {Username}", username);

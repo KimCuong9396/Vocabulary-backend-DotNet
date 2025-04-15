@@ -74,12 +74,12 @@ public class RandomQuizzesController : ControllerBase
             Title = quiz.Title,
             Description = quiz.Description,
             QuizType = quiz.QuizType,
-            Words = selectedWords.Select(w => new WordDto
+            Words = selectedWords.Select(w => new WordsDto
             {
                 WordId = w.WordId,
                 WordText = w.WordText,
                 Pronunciation = w.Pronunciation,
-                Translations = w.Translations.Select(t => new WordTranslationDto
+                Translations = w.Translations.Select(t => new WordTranslationsDto
                 {
                     Language = t.Language,
                     Meaning = t.Meaning,
@@ -105,18 +105,18 @@ public class RandomQuizDto
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? QuizType { get; set; }
-    public List<WordDto> Words { get; set; } = new();
+    public List<WordsDto> Words { get; set; } = new();
 }
 
-public class WordDto
+public class WordsDto
 {
     public int WordId { get; set; }
     public string WordText { get; set; } = string.Empty;
     public string? Pronunciation { get; set; }
-    public List<WordTranslationDto> Translations { get; set; } = new();
+    public List<WordTranslationsDto> Translations { get; set; } = new();
 }
 
-public class WordTranslationDto
+public class WordTranslationsDto
 {
     public string Language { get; set; } = string.Empty;
     public string Meaning { get; set; } = string.Empty;

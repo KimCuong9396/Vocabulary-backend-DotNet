@@ -3,7 +3,10 @@ namespace VocabularyApp.Models;
 public class Word
 {
     public int WordId { get; set; }
+    public string? Title { get; set; } // Thêm thuộc tính Title
     public string WordText { get; set; } = string.Empty;
+    public string Mean { get; set; } = string.Empty;
+    public string Example { get; set; }
     public string? Pronunciation { get; set; }
     public string? PartOfSpeech { get; set; }
     public string? AudioUrl { get; set; }
