@@ -17,6 +17,8 @@ public class WordDto
 {
     public int WordId { get; set; }
     public string WordText { get; set; } = string.Empty;
+    public string Mean { get; set; }
+    public string Example { get; set; }
     public string? Pronunciation { get; set; }
     public List<TranslationDto> Translations { get; set; } = new();
 }

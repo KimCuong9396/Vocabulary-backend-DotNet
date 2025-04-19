@@ -69,6 +69,8 @@ public class ProgressController : ControllerBase
                     {
                         WordId = p.Word.WordId,
                         WordText = p.Word.WordText,
+                        Example = p.Word.Example,
+                        Mean = p.Word.Mean,
                         Pronunciation = p.Word.Pronunciation,
                         Translations = p.Word.Translations.Select(t => new TranslationDto
                         {
@@ -170,6 +172,8 @@ public class ProgressController : ControllerBase
                     {
                         WordId = w.WordId,
                         WordText = w.WordText,
+                        Example = w.Example,
+                        Mean = w.Mean,
                         Pronunciation = w.Pronunciation,
                         Translations = w.Translations.Select(t => new TranslationDto
                         {
@@ -233,6 +237,8 @@ public class ProgressController : ControllerBase
                     {
                         WordId = p.Word.WordId,
                         WordText = p.Word.WordText,
+                        Example = p.Word.Example,
+                        Mean=p.Word.Mean,
                         Pronunciation = p.Word.Pronunciation,
                         Translations = p.Word.Translations.Select(t => new TranslationDto
                         {

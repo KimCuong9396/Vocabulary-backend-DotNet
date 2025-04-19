@@ -107,6 +107,7 @@ public class LessonsController : ControllerBase
                 CourseId = lessonRequest.CourseId,
                 Title = lessonRequest.Title,
                 Description = lessonRequest.Description,
+                ImageUrl = lessonRequest.ImageUrl,
                 OrderInCourse = lessonRequest.OrderInCourse,
                 LessonWords = new List<LessonWord>(),
                 Quizzes = new List<Quiz>()
@@ -182,6 +183,7 @@ public class LessonRequest
     public int CourseId { get; set; }
     public string Title { get; set; }
     public string? Description { get; set; }
+    public string? ImageUrl { get; set; }
     public int OrderInCourse { get; set; }
 }
 }
