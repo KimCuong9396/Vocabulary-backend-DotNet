@@ -91,7 +91,7 @@ public class ProgressController : ControllerBase
             return StatusCode(500, new { Message = "An unexpected error occurred while fetching progress." });
         }
     }
-
+    
     // POST: api/progress
     [HttpPost]
     public async Task<ActionResult<UserProgressDto>> UpdateProgress([FromBody] UserProgressRequest request)

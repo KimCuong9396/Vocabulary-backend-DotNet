@@ -178,6 +178,92 @@ public class LessonsController : ControllerBase
             return StatusCode(500, new { Message = "An unexpected error occurred while deleting the lesson." });
         }
     }
+
+    // PUT: api/Lessons/5
+[HttpPut("{id}")]
+[Authorize(Roles = "Premium")]
+public async Task<ActionResult> UpdateLesson(int id, [FromBody] LessonRequest lessonRequest)
+{
+    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                    ?? User.FindFirst("sub")?.Value;
+
+    try
+    {
+        _logger.LogInformation("Received lesson update request for LessonId: {LessonId}, Request: {Request}",
+            id, JsonConvert.SerializeObject(lessonRequest));
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            _logger.LogWarning("Missing or empty user ID claim in JWT token");
+            return Unauthorized(new { Message = "Invalid token: Missing user ID." });
+        }
+        if (!int.TryParse(userIdClaim, out int userId))
+        {
+            _logger.LogWarning("Invalid user ID claim value: {UserIdClaim}. Cannot parse to integer.", userIdClaim);
+            return Unauthorized(new { Message = "Invalid token: User ID is not valid." });
+        }
+        if (string.IsNullOrWhiteSpace(lessonRequest.Title))
+        {
+            _logger.LogWarning("Title is required for lesson update");
+            return BadRequest(new { Message = "Title is required." });
+        }
+        if (lessonRequest.CourseId <= 0)
+        {
+            _logger.LogWarning("Invalid CourseId: {CourseId}", lessonRequest.CourseId);
+            return BadRequest(new { Message = "CourseId must be a positive integer." });
+        }
+        if (lessonRequest.OrderInCourse < 0)
+        {
+            _logger.LogWarning("Invalid OrderInCourse: {OrderInCourse}", lessonRequest.OrderInCourse);
+            return BadRequest(new { Message = "OrderInCourse cannot be negative." });
+        }
+
+        var lesson = await _context.Lessons.FirstOrDefaultAsync(l => l.LessonId == id);
+        if (lesson == null)
+        {
+            _logger.LogWarning("Lesson not found with ID: {LessonId}", id);
+            return NotFound(new { Message = "Lesson not found." });
+        }
+
+        lesson.CourseId = lessonRequest.CourseId;
+        lesson.Title = lessonRequest.Title;
+        lesson.Description = lessonRequest.Description;
+        lesson.ImageUrl = lessonRequest.ImageUrl;
+        lesson.OrderInCourse = lessonRequest.OrderInCourse;
+
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Lesson updated successfully by UserId: {UserId}, LessonId: {LessonId}", userId, lesson.LessonId);
+        return Ok(new { Message = "Lesson updated successfully." });
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error updating lesson with ID: {LessonId} by user with ID: {UserIdClaim}", id, userIdClaim ?? "unknown");
+        return StatusCode(500, new { Message = "An unexpected error occurred while updating the lesson." });
+    }
+}
+
+// GET: api/Lessons
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Lesson>>> GetAllLessons()
+    {
+        try
+        {
+            _logger.LogInformation("Đang lấy tất cả bài học");
+            var lessons = await _context.Lessons
+                .OrderBy(l => l.CourseId)
+                .ThenBy(l => l.OrderInCourse)
+                .ToListAsync();
+            _logger.LogInformation("Đã lấy {Count} bài học", lessons.Count);
+            return Ok(lessons);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi lấy tất cả bài học");
+            return StatusCode(500, new { Message = "Đã xảy ra lỗi khi lấy danh sách bài học." });
+        }
+    }
 public class LessonRequest
 {
     public int CourseId { get; set; }
