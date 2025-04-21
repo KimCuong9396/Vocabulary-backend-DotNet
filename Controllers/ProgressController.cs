@@ -91,6 +91,43 @@ public class ProgressController : ControllerBase
             return StatusCode(500, new { Message = "An unexpected error occurred while fetching progress." });
         }
     }
+
+    // GET: api/progress/learned-count
+[HttpGet("learned-count")]
+[Authorize(Roles = "Premium")] // Chỉ người dùng Premium được truy cập
+public async Task<ActionResult<IEnumerable<LearnedCountDto>>> GetLearnedCounts()
+{
+    try
+    {
+        _logger.LogInformation("Fetching learned counts for all users");
+
+        var learnedCounts = await _context.Users
+            .Select(u => new LearnedCountDto
+            {
+                UserId = u.UserId,
+                Username = u.Username,
+                LearnedCount = _context.UserProgresses
+                    .Count(p => p.UserId == u.UserId && p.Status == "Learned")
+            })
+            .ToListAsync();
+
+        _logger.LogInformation("Retrieved {Count} learned count records", learnedCounts.Count);
+        return Ok(new { Values = learnedCounts }); // Trả về dưới dạng { Values: [...] } để khớp với frontend
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error fetching learned counts");
+        return StatusCode(500, new { Message = "An unexpected error occurred while fetching learned counts." });
+    }
+}
+
+// DTO cho learned-count
+public class LearnedCountDto
+{
+    public int UserId { get; set; }
+    public string Username { get; set; }
+    public int LearnedCount { get; set; }
+}
     
     // POST: api/progress
     [HttpPost]
@@ -266,4 +303,7 @@ public class ProgressController : ControllerBase
                ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
                ?? User.FindFirst("sub")?.Value;
     }
+
+    
 }
+

@@ -391,6 +391,62 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpPut("change-password")]
+public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+{
+    try
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                     ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                     ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            _logger.LogWarning("Invalid user ID claim: {UserIdClaim}", userIdClaim ?? "null");
+            return Unauthorized(new { Message = "Invalid token: Missing or invalid user ID." });
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("User not found with UserId: {UserId}", userId);
+            return NotFound(new { Message = "User not found." });
+        }
+
+        // Validate current password
+        if (string.IsNullOrEmpty(request.CurrentPassword) || 
+            !BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+        {
+            _logger.LogWarning("Invalid current password for UserId: {UserId}", userId);
+            return BadRequest(new { Message = "Current password is incorrect." });
+        }
+
+        // Validate new password
+        if (string.IsNullOrEmpty(request.NewPassword) || request.NewPassword.Length < 8)
+        {
+            return BadRequest(new { Message = "New password must be at least 8 characters long." });
+        }
+
+        // Update password
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Password changed successfully for UserId: {UserId}", userId);
+        return Ok(new { Message = "Password changed successfully." });
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error changing password");
+        return StatusCode(500, new { Message = "An unexpected error occurred while changing the password." });
+    }
+}
+
+public class ChangePasswordRequest
+{
+    public string CurrentPassword { get; set; }
+    public string NewPassword { get; set; }
+}
+
     public class CreateUserRequest
     {
         public string Username { get; set; }
